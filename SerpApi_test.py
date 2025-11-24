@@ -216,7 +216,8 @@ class SerpAPITester:
             'videos_results', 'news_results', 'local_results',
             'answer_box', 'knowledge_graph', 'flights_results',
             'jobs_results', 'scholar_results', 'search_information',
-            'patent_results', 'app_results', 'finance_results'
+            'patent_results', 'app_results', 'finance_results',
+            'markets', 'top_stories'
         ]
 
         # 只要包含任一结果字段就认为成功
