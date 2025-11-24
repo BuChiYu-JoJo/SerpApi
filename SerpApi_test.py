@@ -23,7 +23,9 @@ class SerpAPITester:
     # SerpAPI支持的所有引擎
     SUPPORTED_ENGINES = [
         'google', 'google_local', 'google_images',
-        'google_videos', 'google_news', 'google_shopping'
+        'google_videos', 'google_news', 'google_shopping',
+        'google_play', 'google_jobs', 'google_scholar',
+        'google_finance', 'google_patents'
     ]
 
     def __init__(self, api_key, save_details=False):
@@ -59,6 +61,39 @@ class SerpAPITester:
             "movies 2025", "tv shows", "cartoon",
             "books best seller", "novels", "ebooks"
         ]
+        self.engine_keyword_map = {
+            "google_play": [
+                "productivity app", "fitness tracker app",
+                "photo editor", "music streaming app", "language learning app",
+                "budget tracker", "habit tracker", "calendar app",
+                "travel planner app", "weather forecast app"
+            ],
+            "google_jobs": [
+                "software engineer", "data scientist", "product manager",
+                "ux designer", "marketing manager", "cloud architect",
+                "devops engineer", "qa engineer", "project manager",
+                "accountant"
+            ],
+            "google_scholar": [
+                "machine learning", "quantum computing", "climate change",
+                "computer vision", "natural language processing",
+                "renewable energy", "graph neural networks",
+                "blockchain security", "genome sequencing", "edge computing"
+            ],
+            "google_finance": [
+                "AAPL stock", "TSLA stock", "MSFT stock",
+                "GOOGL stock", "AMZN stock", "NVDA stock",
+                "USD to EUR", "NASDAQ index", "Dow Jones",
+                "S&P 500"
+            ],
+            "google_patents": [
+                "electric vehicle battery", "solar panel efficiency",
+                "3d printing metal", "autonomous driving system",
+                "drone delivery", "medical imaging device",
+                "wireless charging", "vr headset optics",
+                "robotic arm control", "quantum encryption"
+            ]
+        }
 
     def make_request(self, engine, query):
         """
@@ -180,7 +215,8 @@ class SerpAPITester:
             'organic_results', 'shopping_results', 'images_results',
             'videos_results', 'news_results', 'local_results',
             'answer_box', 'knowledge_graph', 'flights_results',
-            'jobs_results', 'scholar_results', 'search_information'
+            'jobs_results', 'scholar_results', 'search_information',
+            'patent_results', 'app_results', 'finance_results'
         ]
 
         # 只要包含任一结果字段就认为成功
@@ -245,13 +281,13 @@ class SerpAPITester:
         """
         results = []
 
-        # 如果未指定query，使用随机关键词
+        # 如果未指定query，使用对应引擎的关键词池
         queries = []
         if query:
             queries = [query] * num_requests
         else:
-            # 循环使用关键词池
-            queries = [self.keyword_pool[i % len(self.keyword_pool)] for i in range(num_requests)]
+            keyword_source = self.engine_keyword_map.get(engine, self.keyword_pool)
+            queries = [keyword_source[i % len(keyword_source)] for i in range(num_requests)]
 
         print(f"\n开始测试引擎: {engine}")
         print(f"  总请求数: {num_requests}")
