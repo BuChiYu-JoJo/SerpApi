@@ -25,7 +25,8 @@ class SerpAPITester:
     SUPPORTED_ENGINES = [
         'google_play', 'google_jobs', 'google_scholar',
         'google_finance', 'google_patents', 'google_lens',
-        'google_flights', 'google_trends', 'google_hotels'
+        'google_flights', 'google_trends', 'google_hotels',
+        'google_maps'
     ]
 
     def __init__(self, api_key, save_details=False):
@@ -224,6 +225,28 @@ class SerpAPITester:
                     "q": "bitcoin,ethereum,solana,cardano,ripple",
                     "data_type": "TIMESERIES"
                 }
+            ],
+            "google_maps": [
+                {
+                    "q": "pizza",
+                    "type": "search"
+                },
+                {
+                    "q": "coffee",
+                    "type": "search"
+                },
+                {
+                    "q": "restaurant",
+                    "type": "search"
+                },
+                {
+                    "q": "hotel",
+                    "type": "search"
+                },
+                {
+                    "q": "gym",
+                    "type": "search"
+                }
             ]
         }
 
@@ -262,11 +285,13 @@ class SerpAPITester:
 
             if engine == "google_lens":
                 params["url"] = query
-            elif engine in {"google_flights", "google_trends", "google_hotels"}:
+            elif engine in {"google_flights", "google_trends", "google_hotels", "google_maps"}:
                 if not isinstance(query, dict):
                     raise ValueError(f"{engine} 查询参数必须为字典类型")
                 if engine in {"google_trends", "google_hotels"} and not query.get("q"):
                     raise ValueError(f"{engine} 参数缺少必填项: q")
+                if engine == "google_maps" and not query.get("type"):
+                    raise ValueError(f"{engine} 参数缺少必填项: type")
                 params.update(query)
             else:
                 params["q"] = query
@@ -433,7 +458,7 @@ class SerpAPITester:
             keyword_source = self.engine_keyword_map.get(engine, self.keyword_pool)
             if engine == "google_lens":
                 queries = [random.choice(keyword_source) for _ in range(num_requests)]
-            elif engine in {"google_flights", "google_trends", "google_hotels"}:
+            elif engine in {"google_flights", "google_trends", "google_hotels", "google_maps"}:
                 queries = [random.choice(keyword_source) for _ in range(num_requests)]
             else:
                 queries = [keyword_source[i % len(keyword_source)] for i in range(num_requests)]
