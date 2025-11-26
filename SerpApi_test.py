@@ -196,6 +196,46 @@ class SerpAPITester:
                 {
                     "q": "bitcoin,ethereum,solana,cardano,ripple",
                     "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "iphone,samsung,huawei,xiaomi,oneplus",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "netflix,disney+,prime video,hbo max,hulu",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "tesla,ford,toyota,mercedes,bmw",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "chatgpt,gpt4,gemini,claude,llama",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "coke,pepsi,sprite,fanta,dr pepper",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "travel,jobs,insurance,education,healthcare",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "movies,music,games,books,sports",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "rain,snow,wind,storm,heatwave",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "dog,cat,bird,fish,hamster",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "html,css,javascript,sql,php",
+                    "data_type": "TIMESERIES"
                 }
             ]
         }
