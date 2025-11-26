@@ -94,15 +94,21 @@ class SerpAPITester:
             ],
             "google_lens": [
                 "https://i.imgur.com/HBrB8p0.png",
-                "https://i.imgur.com/8Kh2L3g.jpeg",
-                "https://i.imgur.com/FmJ3wSP.jpeg",
-                "https://i.imgur.com/2E8uQxH.jpeg",
-                "https://i.imgur.com/PL0eW24.jpeg",
-                "https://i.imgur.com/4pY3MF6.png",
-                "https://i.imgur.com/OT1eZSW.jpeg",
-                "https://i.imgur.com/1a6zD4t.jpeg",
-                "https://i.imgur.com/lBr8s1a.jpeg",
-                "https://i.imgur.com/3xgv4DY.jpeg"
+                "https://picsum.photos/800/500",
+                "https://picsum.photos/600/400",
+                "https://picsum.photos/300/300",
+                "https://picsum.photos/1200/800",
+                "https://picsum.photos/1080/720",
+                "https://loremflickr.com/800/600",
+                "https://loremflickr.com/640/480",
+                "https://loremflickr.com/1024/768",
+                "https://loremflickr.com/500/600",
+                "https://loremflickr.com/1200/900",
+    	"https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d",
+   	"https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e",
+    	"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+    	"https://images.unsplash.com/photo-1519682577862-22b62b24e493",
+    	"https://images.unsplash.com/photo-1524504388940-b1c1722653e1"
             ]
         }
 
@@ -232,7 +238,7 @@ class SerpAPITester:
             'answer_box', 'knowledge_graph', 'flights_results',
             'jobs_results', 'scholar_results', 'search_information',
             'patent_results', 'app_results', 'finance_results',
-            'markets', 'top_stories'
+            'markets', 'top_stories', 'visual_matches'
         ]
 
         # 只要包含任一结果字段就认为成功
