@@ -25,7 +25,7 @@ class SerpAPITester:
     SUPPORTED_ENGINES = [
         'google_play', 'google_jobs', 'google_scholar',
         'google_finance', 'google_patents', 'google_lens',
-        'google_flights'
+        'google_flights', 'google_trends', 'google_hotels'
     ]
 
     def __init__(self, api_key, save_details=False):
@@ -175,6 +175,55 @@ class SerpAPITester:
                     "return_date": "2025-12-15",
                     "currency": "USD"
                 }
+            ],
+            "google_hotels": [
+                {
+                    "q": "Bali Resorts",
+                    "check_in_date": "2025-11-27",
+                    "check_out_date": "2025-11-28"
+                },
+                {
+                    "q": "Tokyo luxury hotels",
+                    "check_in_date": "2025-12-15",
+                    "check_out_date": "2025-12-20"
+                },
+                {
+                    "q": "New York boutique hotels",
+                    "check_in_date": "2025-12-22",
+                    "check_out_date": "2025-12-26"
+                },
+                {
+                    "q": "Paris family hotels",
+                    "check_in_date": "2026-01-05",
+                    "check_out_date": "2026-01-09"
+                },
+                {
+                    "q": "Sydney beach resorts",
+                    "check_in_date": "2026-02-10",
+                    "check_out_date": "2026-02-15"
+                }
+            ],
+            "google_trends": [
+                {
+                    "q": "coffee,milk,bread,pasta,steak",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "ai,blockchain,cloud,vr,5g",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "python,java,go,rust,typescript",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "nba,nfl,mlb,nhl,ufc",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "bitcoin,ethereum,solana,cardano,ripple",
+                    "data_type": "TIMESERIES"
+                }
             ]
         }
 
@@ -213,7 +262,11 @@ class SerpAPITester:
 
             if engine == "google_lens":
                 params["url"] = query
-            elif engine == "google_flights":
+            elif engine in {"google_flights", "google_trends", "google_hotels"}:
+                if not isinstance(query, dict):
+                    raise ValueError(f"{engine} 查询参数必须为字典类型")
+                if engine in {"google_trends", "google_hotels"} and not query.get("q"):
+                    raise ValueError(f"{engine} 参数缺少必填项: q")
                 params.update(query)
             else:
                 params["q"] = query
@@ -306,7 +359,8 @@ class SerpAPITester:
             'answer_box', 'knowledge_graph', 'flights_results', 'flights',
             'jobs_results', 'scholar_results', 'search_information',
             'patent_results', 'app_results', 'finance_results',
-            'markets', 'top_stories', 'visual_matches', 'best_flights'
+            'markets', 'top_stories', 'visual_matches', 'best_flights',
+            'interest_over_time', 'brands', 'properties', 'prices', 'nearby_places'
         ]
 
         # 只要包含任一结果字段就认为成功
@@ -379,7 +433,7 @@ class SerpAPITester:
             keyword_source = self.engine_keyword_map.get(engine, self.keyword_pool)
             if engine == "google_lens":
                 queries = [random.choice(keyword_source) for _ in range(num_requests)]
-            elif engine == "google_flights":
+            elif engine in {"google_flights", "google_trends", "google_hotels"}:
                 queries = [random.choice(keyword_source) for _ in range(num_requests)]
             else:
                 queries = [keyword_source[i % len(keyword_source)] for i in range(num_requests)]
