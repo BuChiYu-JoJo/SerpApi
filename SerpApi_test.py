@@ -10,6 +10,7 @@ import time
 import json
 import argparse
 import concurrent.futures
+import random
 from urllib.parse import urlencode, urlparse
 from datetime import datetime
 from collections import defaultdict
@@ -23,7 +24,8 @@ class SerpAPITester:
     # SerpAPI支持的所有引擎
     SUPPORTED_ENGINES = [
         'google_play', 'google_jobs', 'google_scholar',
-        'google_finance', 'google_patents'
+        'google_finance', 'google_patents', 'google_lens',
+        'google_flights'
     ]
 
     def __init__(self, api_key, save_details=False):
@@ -90,6 +92,60 @@ class SerpAPITester:
                 "drone delivery", "medical imaging device",
                 "wireless charging", "vr headset optics",
                 "robotic arm control", "quantum encryption"
+            ],
+            "google_lens": [
+                "https://i.imgur.com/HBrB8p0.png",
+                "https://i.imgur.com/8Kh2L3g.jpeg",
+                "https://i.imgur.com/FmJ3wSP.jpeg",
+                "https://i.imgur.com/2E8uQxH.jpeg",
+                "https://i.imgur.com/PL0eW24.jpeg",
+                "https://i.imgur.com/4pY3MF6.png",
+                "https://i.imgur.com/OT1eZSW.jpeg",
+                "https://i.imgur.com/1a6zD4t.jpeg",
+                "https://i.imgur.com/lBr8s1a.jpeg",
+                "https://i.imgur.com/3xgv4DY.jpeg"
+            ],
+            "google_flights": [
+                {
+                    "departure_id": "PEK",
+                    "arrival_id": "AUS",
+                    "outbound_date": "2026-11-27",
+                    "return_date": "2026-12-03",
+                    "currency": "USD",
+                    "hl": "en"
+                },
+                {
+                    "departure_id": "SFO",
+                    "arrival_id": "NRT",
+                    "outbound_date": "2026-10-15",
+                    "return_date": "2026-10-25",
+                    "currency": "USD",
+                    "hl": "en"
+                },
+                {
+                    "departure_id": "LHR",
+                    "arrival_id": "JFK",
+                    "outbound_date": "2026-08-20",
+                    "return_date": "2026-08-28",
+                    "currency": "GBP",
+                    "hl": "en"
+                },
+                {
+                    "departure_id": "SYD",
+                    "arrival_id": "LAX",
+                    "outbound_date": "2026-09-05",
+                    "return_date": "2026-09-15",
+                    "currency": "AUD",
+                    "hl": "en"
+                },
+                {
+                    "departure_id": "DXB",
+                    "arrival_id": "CDG",
+                    "outbound_date": "2026-12-01",
+                    "return_date": "2026-12-10",
+                    "currency": "EUR",
+                    "hl": "en"
+                }
             ]
         }
 
@@ -108,7 +164,7 @@ class SerpAPITester:
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'product': 'SerpAPI',
             'engine': engine,
-            'query': query,
+            'query': json.dumps(query, ensure_ascii=False) if isinstance(query, dict) else query,
             'status_code': None,
             'response_time': None,
             'response_size': None,
@@ -122,10 +178,16 @@ class SerpAPITester:
             # 准备请求参数 - 禁用缓存以获取真实响应时间
             params = {
                 "engine": engine,
-                "q": query,
                 "api_key": self.api_key,
                 "no_cache": "true"  # 禁用缓存
             }
+
+            if engine == "google_lens":
+                params["url"] = query
+            elif engine == "google_flights":
+                params.update(query)
+            else:
+                params["q"] = query
 
             path = f"/search?{urlencode(params)}"
 
@@ -212,7 +274,7 @@ class SerpAPITester:
         result_fields = [
             'organic_results', 'shopping_results', 'images_results',
             'videos_results', 'news_results', 'local_results',
-            'answer_box', 'knowledge_graph', 'flights_results',
+            'answer_box', 'knowledge_graph', 'flights_results', 'flights',
             'jobs_results', 'scholar_results', 'search_information',
             'patent_results', 'app_results', 'finance_results',
             'markets', 'top_stories'
@@ -286,7 +348,12 @@ class SerpAPITester:
             queries = [query] * num_requests
         else:
             keyword_source = self.engine_keyword_map.get(engine, self.keyword_pool)
-            queries = [keyword_source[i % len(keyword_source)] for i in range(num_requests)]
+            if engine == "google_lens":
+                queries = [random.choice(keyword_source) for _ in range(num_requests)]
+            elif engine == "google_flights":
+                queries = [random.choice(keyword_source) for _ in range(num_requests)]
+            else:
+                queries = [keyword_source[i % len(keyword_source)] for i in range(num_requests)]
 
         print(f"\n开始测试引擎: {engine}")
         print(f"  总请求数: {num_requests}")
