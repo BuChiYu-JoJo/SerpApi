@@ -25,7 +25,7 @@ class SerpAPITester:
     SUPPORTED_ENGINES = [
         'google_play', 'google_jobs', 'google_scholar',
         'google_finance', 'google_patents', 'google_lens',
-        'google_flights'
+        'google_flights', 'google_trends'
     ]
 
     def __init__(self, api_key, save_details=False):
@@ -175,6 +175,68 @@ class SerpAPITester:
                     "return_date": "2025-12-15",
                     "currency": "USD"
                 }
+            ],
+            "google_trends": [
+                {
+                    "q": "coffee,milk,bread,pasta,steak",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "ai,blockchain,cloud,vr,5g",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "python,java,go,rust,typescript",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "nba,nfl,mlb,nhl,ufc",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "bitcoin,ethereum,solana,cardano,ripple",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "iphone,samsung,huawei,xiaomi,oneplus",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "netflix,disney+,prime video,hbo max,hulu",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "tesla,ford,toyota,mercedes,bmw",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "chatgpt,gpt4,gemini,claude,llama",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "coke,pepsi,sprite,fanta,dr pepper",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "travel,jobs,insurance,education,healthcare",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "movies,music,games,books,sports",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "rain,snow,wind,storm,heatwave",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "dog,cat,bird,fish,hamster",
+                    "data_type": "TIMESERIES"
+                },
+                {
+                    "q": "html,css,javascript,sql,php",
+                    "data_type": "TIMESERIES"
+                }
             ]
         }
 
@@ -213,7 +275,11 @@ class SerpAPITester:
 
             if engine == "google_lens":
                 params["url"] = query
-            elif engine == "google_flights":
+            elif engine in {"google_flights", "google_trends"}:
+                if not isinstance(query, dict):
+                    raise ValueError(f"{engine} 查询参数必须为字典类型")
+                if engine == "google_trends" and not query.get("q"):
+                    raise ValueError("google_trends 参数缺少必填项: q")
                 params.update(query)
             else:
                 params["q"] = query
@@ -306,7 +372,8 @@ class SerpAPITester:
             'answer_box', 'knowledge_graph', 'flights_results', 'flights',
             'jobs_results', 'scholar_results', 'search_information',
             'patent_results', 'app_results', 'finance_results',
-            'markets', 'top_stories', 'visual_matches', 'best_flights'
+            'markets', 'top_stories', 'visual_matches', 'best_flights',
+            'interest_over_time'
         ]
 
         # 只要包含任一结果字段就认为成功
@@ -379,7 +446,7 @@ class SerpAPITester:
             keyword_source = self.engine_keyword_map.get(engine, self.keyword_pool)
             if engine == "google_lens":
                 queries = [random.choice(keyword_source) for _ in range(num_requests)]
-            elif engine == "google_flights":
+            elif engine in {"google_flights", "google_trends"}:
                 queries = [random.choice(keyword_source) for _ in range(num_requests)]
             else:
                 queries = [keyword_source[i % len(keyword_source)] for i in range(num_requests)]
