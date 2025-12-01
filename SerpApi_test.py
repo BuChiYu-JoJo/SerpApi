@@ -25,7 +25,11 @@ class SerpAPITester:
     SUPPORTED_ENGINES = [
         'google_play', 'google_jobs', 'google_scholar',
         'google_finance', 'google_patents', 'google_lens',
-        'google_flights', 'google_trends', 'google_hotels'
+        'google_flights', 'google_trends', 'google_hotels',
+        'google_maps',
+        # 新增通用搜索引擎支持（使用默认参数池/默认行为）
+        'bing', 'bing_images', 'bing_videos', 'bing_news', 'bing_maps', 'bing_shopping',
+        'yandex', 'duckduckgo'
     ]
 
     def __init__(self, api_key, save_details=False):
@@ -105,11 +109,11 @@ class SerpAPITester:
                 "https://loremflickr.com/1024/768",
                 "https://loremflickr.com/500/600",
                 "https://loremflickr.com/1200/900",
-    	"https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d",
-   	"https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e",
-    	 "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-    	 "https://images.unsplash.com/photo-1519682577862-22b62b24e493",
-    	 "https://images.unsplash.com/photo-1524504388940-b1c1722653e1"
+    	        "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d",
+    	        "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e",
+    	        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+    	        "https://images.unsplash.com/photo-1519682577862-22b62b24e493",
+    	        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1"
             ],
             "google_flights": [
                 {
@@ -224,6 +228,64 @@ class SerpAPITester:
                     "q": "bitcoin,ethereum,solana,cardano,ripple",
                     "data_type": "TIMESERIES"
                 }
+            ],
+            "google_maps": [
+                {
+                    "q": "pizza",
+                    "type": "search"
+                },
+                {
+                    "q": "coffee",
+                    "type": "search"
+                },
+                {
+                    "q": "restaurant",
+                    "type": "search"
+                },
+                {
+                    "q": "hotel",
+                    "type": "search"
+                },
+                {
+                    "q": "gym",
+                    "type": "search"
+                }
+            ],
+            # bing_maps 关键词池：单个词（不再是组合短语）
+            "bing_maps": [
+                "restaurant",
+                "coffee",
+                "gas",
+                "hospital",
+                "parking",
+                "ev",
+                "theater",
+                "gym",
+                "hotels",
+                "museums",
+                "transit",
+                "pharmacy",
+                "airport",
+                "mall",
+                "bike"
+            ],
+            # bing_shopping 关键词池：单个词商品/品牌/类目
+            "bing_shopping": [
+                "headphones",
+                "tv",
+                "laptop",
+                "nike",
+                "smartphone",
+                "bicycle",
+                "coffee",
+                "chair",
+                "camera",
+                "stroller",
+                "beans",
+                "jacket",
+                "sneakers",
+                "smartwatch",
+                "charger"
             ]
         }
 
@@ -260,15 +322,23 @@ class SerpAPITester:
                 "no_cache": "true"  # 禁用缓存
             }
 
+            # google_lens 使用 url 参数
             if engine == "google_lens":
                 params["url"] = query
-            elif engine in {"google_flights", "google_trends", "google_hotels"}:
+            # yandex 使用 text 参数（按照你的要求）
+            elif engine == "yandex":
+                params["text"] = query
+            # 以下引擎需要 dict 型 query 并将其展开为参数
+            elif engine in {"google_flights", "google_trends", "google_hotels", "google_maps"}:
                 if not isinstance(query, dict):
                     raise ValueError(f"{engine} 查询参数必须为字典类型")
                 if engine in {"google_trends", "google_hotels"} and not query.get("q"):
                     raise ValueError(f"{engine} 参数缺少必填项: q")
+                if engine == "google_maps" and not query.get("type"):
+                    raise ValueError(f"{engine} 参数缺少必填项: type")
                 params.update(query)
             else:
+                # 默认使用 q 参数（其他新增引擎如 bing/duckduckgo 使用默认 q）
                 params["q"] = query
 
             path = f"/search?{urlencode(params)}"
@@ -355,7 +425,7 @@ class SerpAPITester:
         # 检查是否包含搜索结果（不同引擎的结果字段可能不同）
         result_fields = [
             'organic_results', 'shopping_results', 'images_results',
-            'videos_results', 'news_results', 'local_results',
+            'video_results', 'news_results', 'local_results',
             'answer_box', 'knowledge_graph', 'flights_results', 'flights',
             'jobs_results', 'scholar_results', 'search_information',
             'patent_results', 'app_results', 'finance_results',
@@ -433,7 +503,7 @@ class SerpAPITester:
             keyword_source = self.engine_keyword_map.get(engine, self.keyword_pool)
             if engine == "google_lens":
                 queries = [random.choice(keyword_source) for _ in range(num_requests)]
-            elif engine in {"google_flights", "google_trends", "google_hotels"}:
+            elif engine in {"google_flights", "google_trends", "google_hotels", "google_maps"}:
                 queries = [random.choice(keyword_source) for _ in range(num_requests)]
             else:
                 queries = [keyword_source[i % len(keyword_source)] for i in range(num_requests)]
@@ -747,4 +817,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
